@@ -7,8 +7,8 @@ import (
 
 //TestDefaultAccountAddress 测试账户地址
 var (
-	TestDefaultAccountAddress    = "0x915dDe6e87dEF17FB1FE09A7710FC65d4b855a08"
-	TestDefaultAccountPrivateKey = "8848da9feb2008022e691185e43d8603adced3bcf24a976901db44ddc4521d4d"
+	TestDefaultAccountAddress    = "0x1BBDcBC03275b819Fb6E34Ad699be47213efB641"
+	TestDefaultAccountPrivateKey = "41a7769df9a5b19951d91f96df8d43e1bccf871a432de3423a441591f2f3f19c"
 )
 
 //TestGetBalanceByAddress
@@ -40,7 +40,7 @@ func TestGetPendingBalanceByAddress(t *testing.T) {
 func TestTransferETHByAddress(t *testing.T) {
 	a := NewAccount(4, TestDefaultAccountAddress, TestDefaultAccountPrivateKey)
 	err := a.TransferETHByAddress(
-		"0xf7CDB8BDcfe20498eA60de0c7ddd933f01461409",
+		"0x668396FB2Dcd72A9c9CF8A67EC06e7FfaDb49efB",
 		1000000000000000000,
 	)
 	if err != nil {
