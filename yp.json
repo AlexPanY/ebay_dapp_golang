@@ -1,0 +1,5 @@
+{
+	"name": "Test Yopu",
+	"description": "Test Yopu",
+	"image": "https:\/\/s3.amazonaws.com\/your-bucket\/images\/{id}.png"
+}
