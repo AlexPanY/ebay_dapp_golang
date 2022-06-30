@@ -1,4 +1,4 @@
-package driver
+package redis
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	Rds *redis.Client
+	Conn *redis.Client
 )
 
 type CT struct {
@@ -21,13 +21,11 @@ type CT struct {
 	DB       int
 }
 
-const EBAO_POLICY_REDIS_PREFIX = "ebao_policy:"
-
 func Init(cfg RedisConf) {
 
 	conf, _ := getRedisUriConf(cfg.Uri)
 
-	Rds = redis.NewClient(&redis.Options{
+	Conn = redis.NewClient(&redis.Options{
 		Addr:         conf.Host,
 		Password:     conf.Password,
 		DB:           conf.DB,
@@ -38,7 +36,7 @@ func Init(cfg RedisConf) {
 		PoolTimeout:  30 * time.Second,
 	})
 
-	pong, err := Rds.Ping().Result()
+	pong, err := Conn.Ping().Result()
 	if err != nil {
 		log.Println(err)
 	}

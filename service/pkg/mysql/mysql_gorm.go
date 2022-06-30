@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	m "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -32,20 +33,26 @@ func Init(ormType string, db MultipleMysqlConf) (err error) {
 func NewGORMConns(confs MultipleMysqlConf) (GormConns, error) {
 	conns := make(GormConns)
 	for k, v := range confs {
-		conn, err := gorm.Open(defaultDriverName, v.Dsn)
+		orm, err := gorm.Open(m.Open(v.Dsn), &gorm.Config{})
 		if err != nil {
 			return conns, fmt.Errorf(`msg="mysql=%s connection failed." err="%+v"`,
 				k,
 				err,
 			)
 		}
-		conn.DB().SetConnMaxLifetime(time.Second * 600)
-		conn.DB().SetMaxIdleConns(10)
-		conn.DB().SetMaxOpenConns(200)
+		conn, err := orm.DB()
+		if err != nil {
+			return conns, fmt.Errorf(`msg="mysql=%s connection failed." err="%+v"`,
+				k,
+				err,
+			)
+		}
 
-		conn.LogMode(v.Debug)
+		conn.SetConnMaxLifetime(time.Second * 600)
+		conn.SetMaxIdleConns(10)
+		conn.SetMaxOpenConns(200)
 
-		conns[k] = conn
+		conns[k] = orm
 	}
 	return conns, nil
 }

@@ -11,6 +11,9 @@ func Load(g *gin.Engine) *gin.Engine {
 	v1Api := g.Group("/v1")
 	{
 		v1Api.POST("/user/get", v1.GetUserInfoByID)
+
+		//nft token
+		v1Api.POST("/asset/create", v1.CreateYPTToken)
 	}
 
 	return g

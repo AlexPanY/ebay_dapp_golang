@@ -1,11 +1,8 @@
 package v1
 
 import (
-	"net/http"
-
 	"ebay_dapp_golang/api"
-	"ebay_dapp_golang/internal/model"
-	"ebay_dapp_golang/internal/service"
+	"ebay_dapp_golang/errno"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,10 +17,12 @@ type GetUserInfoByIDRequest struct {
 func GetUserInfoByID(c *gin.Context) {
 	var req GetUserInfoByIDRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		api.JSON(c, http.StatusOK, nil, nil)
+		api.ErrJSONWithRawErr(c, errno.ErrParamInvalid, err)
 		return
 	}
-	user, _ := service.NewUserService().GetUserInfoByID(req.UserID)
-	api.JSON(c, http.StatusOK, user, nil)
+	// user, _ := service.NewUserService().GetUserInfoByID(req.UserID)
+	user := make([]int, 0)
+
+	api.SuccJSONWithData(c, user)
 	return
 }

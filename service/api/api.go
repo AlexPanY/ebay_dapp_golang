@@ -1,47 +1,74 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
-	"ebay_dapp_golang/pkg/logger"
-	"ebay_dapp_golang/utils/errs"
+	"ebay_dapp_golang/errno"
+	log "ebay_dapp_golang/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
-type response struct {
-	RequestID string      `json:"request_id"`
-	Code      int         `json:"code"`
-	Msg       string      `json:"msg"`
-	Data      interface{} `json:"data"`
-	Next      string      `json:"next"`
+//日志格式
+var (
+	LogErrFormatTemplate  = `req_id="%v" method="%+v" uri="%+v" msg="%+v" err="%v"`
+	LogInfoFormatTemplate = `req_id="%v" method="%+v" uri="%+v" msg="%+v"`
+)
+
+const (
+	X_REQUEST_ID = "X-REQUEST-ID"
+)
+
+//ApiResponse API response format
+type ApiResponse struct {
+	RequestID string `json:"requestId"`
+	Code      string `json:"code"`
+	Message   string `json:"message"`
 }
 
-//JSON - Public interface return
-func JSON(c *gin.Context, httpCode int, data interface{}, err error) {
-	if err != nil {
-		logger.Error(err.Error())
+type ApiResponseData struct {
+	RequestID string      `json:"requestId"`
+	Code      string      `json:"code"`
+	Message   string      `json:"message"`
+	Data      interface{} `json:"data"`
+}
+
+func SuccJSONWithData(c *gin.Context, data interface{}) {
+	if data == nil {
+		data = make([]int, 0)
 	}
 
-	c.JSON(http.StatusOK, response{
-		Code: httpCode,
-		Msg:  errs.ErrorMsg[httpCode],
-		Data: data,
-		Next: "",
-	})
+	rep := ApiResponseData{
+		RequestID: c.Request.Header.Get(X_REQUEST_ID),
+		Code:      errno.Success.Code,
+		Message:   errno.Success.Message,
+		Data:      data,
+	}
 
+	c.JSON(http.StatusOK, rep)
 	return
 }
 
-//Serve
-func Serve() {
-	gin.SetMode(gin.ReleaseMode)
+//ErrJSONWithRawErr
+func ErrJSONWithRawErr(c *gin.Context, err *errno.Err, rawErr error) {
 
-	g := gin.New()
-
-	g = routers.Load(g)
-
-	if err := g.Run(":8082"); err != nil {
-		logger.F.Error("service start fail: " + err.Error())
+	rep := ApiResponse{
+		RequestID: c.Request.Header.Get(X_REQUEST_ID),
+		Code:      err.Code,
+		Message:   err.Message,
 	}
+
+	if rawErr != nil {
+		log.Error(fmt.Sprintf(LogErrFormatTemplate,
+			rep.RequestID,
+			c.Request.Method,
+			c.Request.URL.Path,
+			err.Message,
+			rawErr.Error()),
+		)
+	}
+
+	c.JSON(http.StatusOK, rep)
+	return
 }

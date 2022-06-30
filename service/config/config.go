@@ -3,8 +3,9 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
+	"os"
 
+	"ebay_dapp_golang/pkg/logger"
 	"ebay_dapp_golang/pkg/mysql"
 	"ebay_dapp_golang/pkg/redis"
 
@@ -19,9 +20,9 @@ type ServeConf struct {
 }
 
 type ConfYaml struct {
-	HTTP  ServeConf               `yaml:"serve"`
+	Serve ServeConf               `yaml:"serve"`
 	MySQL mysql.MultipleMysqlConf `yaml:"mysql"`
-	Redis redis.MultipleRedisConf `yaml:"redis"`
+	Redis redis.RedisConf         `yaml:"redis"`
 }
 
 // G Global configuration instance
@@ -36,8 +37,13 @@ func (c *ConfYaml) LoadResource() {
 	redis.Init(c.Redis)
 
 	//Logger
-	logger.InitLogger()
+	logger.Init(redis.Conn)
 
+}
+
+func fileExists(fp string) bool {
+	_, err := os.Stat(fp)
+	return err == nil || os.IsExist(err)
 }
 
 // Parse parse yaml configuration file

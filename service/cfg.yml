@@ -1,0 +1,14 @@
+serve:
+  listen: ":8832"
+  debug: true
+  
+# 数据库配置  
+mysql:
+  yp:
+    dsn: "root:root@tcp(127.0.0.1:3306)/yopu_nft?charset=utf8&loc=Asia%2FShanghai"
+    max_idle_conns: 5
+    max_open_conns: 100
+    call_timeout: 5000
+    conn_max_lifetime: 10
+    debug: true
+

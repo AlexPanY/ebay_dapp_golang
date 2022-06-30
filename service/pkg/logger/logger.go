@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"pika/driver"
 
 	"github.com/go-redis/redis"
 	"go.uber.org/zap"
@@ -11,8 +10,8 @@ import (
 
 var F *zap.Logger
 
-func InitLogger() {
-	writer := NewRedisWriter("log_list", driver.Rds)
+func Init(cli *redis.Client) {
+	writer := NewRedisWriter("log_list", cli)
 	F = NewLogger(writer)
 }
 
